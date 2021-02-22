@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from toplevel_create import TopLevelCreate
 import sqlite3
+from export_xlsx import ExportXlsx
 
 #====検索機能モジュール====
 class OpenData(TopLevelCreate):
@@ -14,25 +15,35 @@ class OpenData(TopLevelCreate):
         #条件から空白を除外
         full_conditions = [elem for elem in full_conditions if elem != '']  
         #----sqlite3操作----
-        conn = sqlite3.connect('birthday.db')
+        conn = sqlite3.connect('お誕生日リスト/birthday_list/birthday.db')
         c = conn.cursor()
 
         c.execute("SELECT * FROM birthday")
-        all_data = c.fetchall()
+        r_tuple = tuple(c.fetchall())
+
+        conn.close
+        #---------------------
+        #全データから条件に一致するもののみリストに格納
         selection_data = []
-        for item in all_data:
+        for item in r_tuple:
             select_result = True
             for key, value in enumerate(conditions_index):
                 if item[value] != full_conditions[key]:
                     select_result = False
             if select_result == True:
                 selection_data.append(item)
-        conn.close
-        #---------------------
+        
         data_count = len(selection_data)
         count_info = f'条件一致データ：{data_count}件'
         c_info_label = Label(self.image_frame, text=count_info)
         c_info_label.pack(anchor=W)
+
+        def click_event():
+            #Excelに出力＆保存
+            xlsx = ExportXlsx(selection_data)
+        # Excel出力ボタン
+        self.xlsx_button = Button(self.image_frame, text='Excelに出力', command=click_event)
+        self.xlsx_button.pack(anchor=W)
         #----データを表示----
         data_frame = ttk.Frame(self.my_win, relief=SOLID, padding=15)
         data_frame.pack()
