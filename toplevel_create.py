@@ -17,3 +17,7 @@ class TopLevelCreate():
         #メッセージ
         self.info_label = Label(self.image_frame, text='★データが10件以上の場合はスクロールして下さい★', pady=5, padx=5)
         self.info_label.pack()
+    def button_create(self):
+        #ボタンを作成
+        self.xlx_button = Button(self.image_frame, text='Excel出力')
+        self.xlx_button.pack()
